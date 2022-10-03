@@ -9,19 +9,19 @@ class WeirdShop {
 
     void updateQuality() {
         for (Item item : items) {
-            if (!item.name.equals("Aged Brie") && !item.name.equals("Backstage Pass")) {
+            if (!isAgedBrie(item) && !isBackstagePass(item)) {
                 decreaseQualityForOtherItems(item);
             } else {
                 increaseQualityForBrieAndBP(item);
             }
 
-            if (!item.name.equals("Gold Coin")) {
+            if (!isGoldCoin(item)) {
                 decreaseSellInByOne(item);
             }
 
             if (item.sellIn < 0) {
-                if (!item.name.equals("Aged Brie")) {
-                    if (!item.name.equals("Backstage Pass")) {
+                if (!isAgedBrie(item)) {
+                    if (!isBackstagePass(item)) {
                         decreaseQualityForOtherItems(item);
                     } else {
                         setQualityToZero(item);
@@ -30,6 +30,33 @@ class WeirdShop {
                    increaseQualityWhenQualityLessThan50(item);
                 }
             }
+            checkQuality(item);
+        }
+    }
+    public boolean isPremium(Item item){
+        return item.name.contains("Premium");
+    }
+    public boolean isAgedBrie(Item item){
+        return item.name.contains("Aged Brie");
+    }
+    public boolean isBackstagePass(Item item){
+        return item.name.contains("Backstage Pass");
+    }
+    public boolean isGoldCoin(Item item){
+        return item.name.contains("Gold Coin");
+    }
+    public void decreaseQualityByTwo(Item item){
+        item.quality = item.quality - 2;
+    }
+
+    public void checkQuality(Item item){
+        if(!isGoldCoin(item)){
+            if (item.quality < 0){
+                item.quality = 0;
+            }
+            if(item.quality >50){
+                item.quality = 50;
+            }
         }
     }
 
@@ -37,11 +64,16 @@ class WeirdShop {
         if (item.quality < 50) {
             increaseQualityByOne(item);
             increaseQualityForBackstagePass(item);
+            if(isPremium(item)){
+                increaseQualityByOne(item);
+            }
         }
     }
     public void decreaseQualityForOtherItems(Item item){
-        if (item.quality > 0 && !item.name.equals("Gold Coin")) {
+        if (item.quality > 0 && !isGoldCoin(item) && !isPremium(item)) {
             decreaseQualityByOne(item);
+        } else if (item.quality > 0 && !isGoldCoin(item) && isPremium(item)) {
+            decreaseQualityByTwo(item);
         }
     }
 
@@ -68,13 +100,21 @@ class WeirdShop {
     }
 
     public void increaseQualityForBackstagePass(Item item){
-        if (item.name.equals("Backstage Pass")) {
+        if (isBackstagePass(item)) {
 
             if (item.sellIn < 12) {
                 increaseQualityWhenQualityLessThan50(item);
             }
             if (item.sellIn < 7) {
                 increaseQualityWhenQualityLessThan50(item);
+            }
+            if(isPremium(item)){
+                if (item.sellIn < 12) {
+                    increaseQualityWhenQualityLessThan50(item);
+                }
+                if (item.sellIn < 7) {
+                    increaseQualityWhenQualityLessThan50(item);
+                }
             }
         }
     }
