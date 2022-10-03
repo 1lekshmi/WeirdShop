@@ -8,55 +8,76 @@ class WeirdShop {
     }
 
     void updateQuality() {
-        for (int i = 0; i < items.length; i++) {
-            if (!items[i].name.equals("Aged Brie")
-                    && !items[i].name.equals("Backstage Pass")) {
-                if (items[i].quality > 0) {
-                    if (!items[i].name.equals("Gold Coin")) {
-                        items[i].quality = items[i].quality - 1;
-                    }
-                }
+        for (Item item : items) {
+            if (!item.name.equals("Aged Brie") && !item.name.equals("Backstage Pass")) {
+                decreaseQualityForOtherItems(item);
             } else {
-                if (items[i].quality < 50) {
-                    items[i].quality = items[i].quality + 1;
-
-                    if (items[i].name.equals("Backstage Pass")) {
-                        if (items[i].sellIn < 12) {
-                            if (items[i].quality < 50) {
-                                items[i].quality = items[i].quality + 1;
-                            }
-                        }
-
-                        if (items[i].sellIn < 7) {
-                            if (items[i].quality < 50) {
-                                items[i].quality = items[i].quality + 1;
-                            }
-                        }
-                    }
-                }
+                increaseQualityForBrieAndBP(item);
             }
 
-            if (!items[i].name.equals("Gold Coin")) {
-                items[i].sellIn = items[i].sellIn - 1;
+            if (!item.name.equals("Gold Coin")) {
+                decreaseSellInByOne(item);
             }
 
-            if (items[i].sellIn < 0) {
-                if (!items[i].name.equals("Aged Brie")) {
-                    if (!items[i].name.equals("Backstage Pass")) {
-                        if (items[i].quality > 0) {
-                            if (!items[i].name.equals("Gold Coin")) {
-                                items[i].quality = items[i].quality - 1;
-                            }
-                        }
+            if (item.sellIn < 0) {
+                if (!item.name.equals("Aged Brie")) {
+                    if (!item.name.equals("Backstage Pass")) {
+                        decreaseQualityForOtherItems(item);
                     } else {
-                        items[i].quality = items[i].quality - items[i].quality;
+                        setQualityToZero(item);
                     }
                 } else {
-                    if (items[i].quality < 50) {
-                        items[i].quality = items[i].quality + 1;
-                    }
+                   increaseQualityWhenQualityLessThan50(item);
                 }
             }
         }
     }
+
+    public void increaseQualityForBrieAndBP(Item item){
+        if (item.quality < 50) {
+            increaseQualityByOne(item);
+            increaseQualityForBackstagePass(item);
+        }
+    }
+    public void decreaseQualityForOtherItems(Item item){
+        if (item.quality > 0 && !item.name.equals("Gold Coin")) {
+            decreaseQualityByOne(item);
+        }
+    }
+
+    public void increaseQualityWhenQualityLessThan50(Item item) {
+        if (item.quality < 50) {
+            increaseQualityByOne(item);
+        }
+    }
+
+    public void increaseQualityByOne(Item item){
+        item.quality = item.quality + 1;
+    }
+
+    public void decreaseQualityByOne(Item item){
+        item.quality = item.quality - 1;
+    }
+
+    public void setQualityToZero(Item item){
+        item.quality = 0;
+    }
+
+    public void decreaseSellInByOne(Item item){
+        item.sellIn = item.sellIn - 1;
+    }
+
+    public void increaseQualityForBackstagePass(Item item){
+        if (item.name.equals("Backstage Pass")) {
+
+            if (item.sellIn < 12) {
+                increaseQualityWhenQualityLessThan50(item);
+            }
+            if (item.sellIn < 7) {
+                increaseQualityWhenQualityLessThan50(item);
+            }
+        }
+    }
+
 }
+
